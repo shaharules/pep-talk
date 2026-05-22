@@ -1,5 +1,5 @@
-import { useState } from "react";
 
+import { useState, useEffect } from "react";
 const reminders = [
   { text: "הדרך שלך לא נראית כמו של אף אחד אחר. זאת לא תקלה - זה הפיצ'ר.", sub: "יאלה - דבר טוב שקרה לך היום!", gratitude: false },
   { text: "את מביאה אור, כיף ושמחה לכל מקום שאת נכנסת אליו. גם כשאת לא שמה לב.", sub: "אנשים מרגישים את זה. גם אם לא תמיד אומרים.", gratitude: false },
@@ -33,6 +33,23 @@ function App() {
   const [current, setCurrent] = useState(Math.floor(Math.random() * reminders.length));
   const [inputs, setInputs] = useState(["", "", ""]);
   const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+    if ('Notification' in window) {
+      Notification.requestPermission();
+    }
+    const now = new Date();
+    const msUntil9am = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (now.getHours() >= 9 ? 1 : 0), 9, 0, 0) - now;
+    const timeout = setTimeout(() => {
+      new Notification('פפ טוק', { body: reminders[Math.floor(Math.random() * reminders.length)].text, dir: 'rtl' });
+      setInterval(() => {
+        new Notification('פפ טוק', { body: reminders[Math.floor(Math.random() * reminders.length)].text, dir: 'rtl' });
+      }, 24 * 60 * 60 * 1000);
+    }, msUntil9am);
+    return () => clearTimeout(timeout);
+  }, []);
 
   const r = reminders[current];
 
