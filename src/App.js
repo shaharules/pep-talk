@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+
 const reminders = [
   { text: "הדרך שלך לא נראית כמו של אף אחד אחר. זאת לא תקלה - זה הפיצ'ר.", sub: "יאלה - דבר טוב שקרה לך היום!", gratitude: false },
   { text: "את מביאה אור, כיף ושמחה לכל מקום שאת נכנסת אליו. גם כשאת לא שמה לב.", sub: "אנשים מרגישים את זה. גם אם לא תמיד אומרים.", gratitude: false },
@@ -33,6 +33,7 @@ function App() {
   const [current, setCurrent] = useState(Math.floor(Math.random() * reminders.length));
   const [inputs, setInputs] = useState(["", "", ""]);
   const [saved, setSaved] = useState(false);
+
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
@@ -41,13 +42,13 @@ function App() {
       Notification.requestPermission();
     }
     const now = new Date();
-    const msUntil9am = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (now.getHours() >= 9 ? 1 : 0), 9, 0, 0) - now;
+    const msUntil16 = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (now.getHours() >= 16 ? 1 : 0), 16, 0, 0) - now;
     const timeout = setTimeout(() => {
       new Notification('פפ טוק', { body: reminders[Math.floor(Math.random() * reminders.length)].text, dir: 'rtl' });
       setInterval(() => {
         new Notification('פפ טוק', { body: reminders[Math.floor(Math.random() * reminders.length)].text, dir: 'rtl' });
       }, 24 * 60 * 60 * 1000);
-    }, msUntil9am);
+    }, msUntil16);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -74,16 +75,12 @@ function App() {
   return (
     <div style={{ minHeight: "100vh", background: colors.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
       <div style={{ direction: "rtl", fontFamily: "sans-serif", maxWidth: 480, width: "100%" }}>
-        <div style={{ fontSize: 13, color: colors.label, marginBottom: "1.5rem", textAlign: "center", letterSpacing: "0.05em" }}>{dateLabel}</div>
-
+        <div style={{ fontSize: 13, color: colors.label, marginBottom: "1.5rem", textAlign: "center" }}>{dateLabel}</div>
         <div style={{ background: colors.card, borderRadius: 24, padding: "2.5rem", marginBottom: "1rem", border: `1px solid ${colors.cardBorder}`, boxShadow: "0 8px 40px rgba(150,0,100,0.3)" }}>
           <div style={{ fontSize: 11, color: colors.label, letterSpacing: "0.08em", marginBottom: "1rem" }}>תזכורת יומית - אל תדלגי על זה</div>
-          <div style={{ fontSize: 20, lineHeight: 1.7, color: colors.text, fontWeight: 400 }}>
-            {saved ? "רשמת. שמרת. יופי של שחר." : r.text}
-          </div>
+          <div style={{ fontSize: 20, lineHeight: 1.7, color: colors.text }}>{saved ? "רשמת. שמרת. יופי של שחר." : r.text}</div>
           {!saved && r.sub && <div style={{ fontSize: 14, color: colors.sub, marginTop: "1rem" }}>{r.sub}</div>}
           {saved && <div style={{ fontSize: 14, color: colors.sub, marginTop: "1rem" }}>{inputs.filter(Boolean).join(" / ")}</div>}
-
           {r.gratitude && !saved && (
             <div style={{ marginTop: "1.2rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               {[0,1,2].map(i => (
@@ -92,30 +89,16 @@ function App() {
                   placeholder={["דבר טוב אחד...","דבר טוב שני...","דבר טוב שלישי..."][i]}
                   style={{ padding: "0.7rem 1rem", borderRadius: 10, border: "1px solid rgba(255,150,200,0.3)", fontSize: 14, direction: "rtl", background: colors.input, color: "#fff", outline: "none" }} />
               ))}
-              <button onClick={() => setSaved(true)}
-                style={{ background: colors.btnPrimary, color: "#fff", border: "none", borderRadius: 10, padding: "0.6rem 1rem", fontSize: 14, cursor: "pointer", marginTop: "0.3rem" }}>
-                שמרתי בלב
-              </button>
+              <button onClick={() => setSaved(true)} style={{ background: colors.btnPrimary, color: "#fff", border: "none", borderRadius: 10, padding: "0.6rem 1rem", fontSize: 14, cursor: "pointer" }}>שמרתי בלב</button>
             </div>
           )}
         </div>
-
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-          <button onClick={() => navigate(-1)}
-            style={{ background: colors.btnSecondary, border: `1px solid ${colors.btnBorder}`, borderRadius: 10, padding: "0.55rem 1.2rem", fontSize: 14, cursor: "pointer", color: "#fff" }}>
-            הקודמת
-          </button>
+          <button onClick={() => navigate(-1)} style={{ background: colors.btnSecondary, border: `1px solid ${colors.btnBorder}`, borderRadius: 10, padding: "0.55rem 1.2rem", fontSize: 14, cursor: "pointer", color: "#fff" }}>הקודמת</button>
           <span style={{ fontSize: 13, color: colors.counter }}>{current + 1} / {reminders.length}</span>
-          <button onClick={() => navigate(1)}
-            style={{ background: colors.btnSecondary, border: `1px solid ${colors.btnBorder}`, borderRadius: 10, padding: "0.55rem 1.2rem", fontSize: 14, cursor: "pointer", color: "#fff" }}>
-            הבאה
-          </button>
+          <button onClick={() => navigate(1)} style={{ background: colors.btnSecondary, border: `1px solid ${colors.btnBorder}`, borderRadius: 10, padding: "0.55rem 1.2rem", fontSize: 14, cursor: "pointer", color: "#fff" }}>הבאה</button>
         </div>
-
-        <button onClick={shuffle}
-          style={{ background: colors.btnPrimary, color: "#fff", border: "none", borderRadius: 12, padding: "0.8rem 1.4rem", fontSize: 15, cursor: "pointer", width: "100%", boxShadow: "0 4px 20px rgba(180,0,100,0.4)" }}>
-          תזכורת אחרת, בבקשה
-        </button>
+        <button onClick={shuffle} style={{ background: colors.btnPrimary, color: "#fff", border: "none", borderRadius: 12, padding: "0.8rem 1.4rem", fontSize: 15, cursor: "pointer", width: "100%", boxShadow: "0 4px 20px rgba(180,0,100,0.4)" }}>תזכורת אחרת, בבקשה</button>
       </div>
     </div>
   );
